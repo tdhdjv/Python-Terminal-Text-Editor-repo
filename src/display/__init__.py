@@ -1,3 +1,3 @@
-from .window import Window
-from .anchored_window import AnchoredWindow, AnchorLayout
-from .screen import Screen
+from . import window
+from . import screen
+from . import anchored_window

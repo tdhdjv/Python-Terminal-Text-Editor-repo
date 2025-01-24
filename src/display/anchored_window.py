@@ -12,9 +12,10 @@ class AnchorLayout(Enum):
 
 #window but you can use anchors so that the screen is resize accordingly
 class AnchoredWindow (Window):
-    def __init__(self, stdscr: "curses._CursesWindow", parent:Window, anchor_x:float = 0.0, anchor_y:float = 0.0,
+    def __init__(self, parent:Window, anchor_x:float = 0.0, anchor_y:float = 0.0,
                 margin_left:int = 0, margin_right:int = 0, margin_top:int = 0, margin_bottom:int = 0,
                   anchor_layout_x:AnchorLayout = AnchorLayout.CENTER, anchor_layout_y:AnchorLayout = AnchorLayout.CENTER) -> None:
+        
         self.anchor_x = anchor_x
         self.anchor_y = anchor_y
         self.margin_left = margin_left
@@ -40,7 +41,7 @@ class AnchoredWindow (Window):
         self.x = pos[0]
         self.y = pos[1]
 
-        super().__init__(stdscr, parent, x = self.x, y = self.y, ncols = self._ncols, nlines = self._nlines)
+        super().__init__(parent, x = self.x, y = self.y, ncols = self._ncols, nlines = self._nlines)
 
     def calc_pos(self) -> tuple[int, int]:
         x = 0
@@ -63,15 +64,11 @@ class AnchoredWindow (Window):
         return [x, y]
 
     def calc_size(self) -> tuple[int, int]:
-        parent_ncols = curses.COLS-1
-        parent_nlines = curses.LINES-1
-
-        if isinstance(self._parent, Window):
-            parent_ncols = self._parent._ncols
-            parent_nlines = self._parent._nlines
+        parent_ncols = self._parent._ncols
+        parent_nlines = self._parent._nlines
             
-        ncols = round(parent_ncols*self.anchor_x) + self.margin_right + self.margin_left
-        nlines = round(parent_nlines*self.anchor_y) + self.margin_top + self.margin_bottom
+        ncols = int(parent_ncols*self.anchor_x) + self.margin_right + self.margin_left
+        nlines = int(parent_nlines*self.anchor_y) + self.margin_top + self.margin_bottom
 
         return [ncols, nlines]
     
@@ -88,5 +85,17 @@ class AnchoredWindow (Window):
         self.x = pos[0]
         self.y = pos[1]
 
-        print(self.x, self.y)
         self.reshape(x = self.x, y = self.y, ncols = self._ncols, nlines = self._nlines)
+        for child in self.children:
+            child.resize()
+
+    def change_margin(self, margin_left:int|None = None, margin_right:int|None= None, margin_top:int|None= None, margin_bottom:int|None= None):
+        if margin_left != None:
+            self.margin_left = margin_left
+        if margin_right != None:
+            self.margin_right = margin_right
+        if margin_top != None:
+            self.margin_top = margin_top
+        if margin_bottom != None:
+            self.margin_bottom = margin_bottom
+        self.resize()

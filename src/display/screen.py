@@ -13,6 +13,7 @@ class Screen:
         curses.update_lines_cols()
         self._ncols = curses.COLS
         self._nlines = curses.LINES
+        self.win = stdscr
 
     def resize(self) -> None:
         curses.update_lines_cols()
@@ -22,9 +23,15 @@ class Screen:
         for window in self.windows:
             window.resize()
 
+    def clear(self) -> None:
+        self.win.clear()
+        for window in self.windows:
+            window.clear()
+
     def render(self, debug=False) -> None:
         for window in self.windows:
             window.render(debug)
+        curses.doupdate()
 
     def add_window(self, window) -> None:
         self.windows.append(window)

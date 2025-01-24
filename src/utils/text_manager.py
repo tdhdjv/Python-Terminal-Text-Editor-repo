@@ -9,14 +9,12 @@ def get_line(line_num:int, text:str, keepends:bool = False) -> str:
     if line_num < 0:
         return ''
     try:
-        text.splitlines(line_num, keepends=keepends)[line_num]
+        return text.splitlines(keepends=keepends)[line_num]
     except IndexError:
         return ''
     
 def get_line_count(text:str) -> int:
-    lines = text.splitlines()
-    if len(lines) == 0:
-        return 1
+    lines = (text+' ').splitlines()
     return len(lines)
 
 def pos_to_string_index(text:str, y, x) -> int:
